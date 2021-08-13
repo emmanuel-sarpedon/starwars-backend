@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Character = require("../models/Character"); // import du modèle "Character"
+const Character = require("../models/Character"); // import du modèle Mongoose "Character"
 
 // -- CREATE --
 router.post("/character/create", async (req, res) => {
@@ -22,7 +22,7 @@ router.post("/character/create", async (req, res) => {
     } = req.fields;
 
     if (
-      // on vérifie qu'on a l'ensemble des paramètres requis
+      // on check s'il manque des paramètres obligatoires
       !name ||
       !height ||
       !mass ||
@@ -51,7 +51,46 @@ router.post("/character/create", async (req, res) => {
 
       await newCharacter.save();
 
-      res.status(200).json(newCharacter);
+      res.status(201).json(newCharacter);
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// -- READ --
+// All characters
+router.get("/characters", async (req, res) => {
+  try {
+    const { name } = req.query;
+    let filters = {};
+
+    if (name) {
+      filters.name = new RegExp(name, "i"); // filtre 'name' non sensible à la casse
+    }
+
+    const characters = await Character.find(filters);
+
+    if (characters) {
+      const count = await Character.find(filters).countDocuments();
+      res.status(200).json({ count: count, data: characters });
+    } else {
+      res.status(204); // Statut HTTP : No Content
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// One character
+router.get("/character/:id", async (req, res) => {
+  try {
+    const character = await Character.findById(req.params.id);
+
+    if (character) {
+      res.status(200).json(character);
+    } else {
+      res.status(204); // Statut HTTP : No Content
     }
   } catch (error) {
     res.status(400).json({ error: error.message });
