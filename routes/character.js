@@ -198,4 +198,25 @@ router.put("/character/update/:id", async (req, res) => {
   }
 });
 
+// -- DELETE --
+router.delete("/character/delete/:id", async (req, res) => {
+  try {
+    const result = await Character.deleteOne({ _id: req.params.id });
+    // .deleteOne renvoie un objet
+    // {
+    //   ok: 1 si aucune erreur rencontrée
+    //   n: le nombre de document(s) supprimé(s)
+    //   deletedCount: le nombre de document(s) supprimé(s). Equivalent à n
+    // }
+
+    if (result.n === 1) {
+      res.status(200).json({ message: "Character deleted" });
+    } else {
+      res.status(400).json({ error: "Character not found" });
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 module.exports = router;
