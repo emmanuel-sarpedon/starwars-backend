@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
 });
 
 app.all("*", (req, res) => {
-  res.status(400).json({ error: "Unknown route" });
+  res.status(404).json({ error: "Unknown route" });
 });
 
 app.listen(process.env.PORT, () => {
