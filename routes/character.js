@@ -19,6 +19,7 @@ router.post("/character/create", async (req, res) => {
       species,
       vehicles,
       starships,
+      picture_url,
     } = req.fields;
 
     if (
@@ -47,6 +48,7 @@ router.post("/character/create", async (req, res) => {
         species: species,
         vehicles: vehicles,
         starships: starships,
+        picture_url: picture_url,
       });
 
       await newCharacter.save();

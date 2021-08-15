@@ -19,6 +19,7 @@ const Character = mongoose.model("Character", {
   species: Array,
   vehicles: Array,
   starships: Array,
+  picture_url: String,
   created: { type: Date, default: Date.now() },
   edited: { type: Date, default: Date.now() },
 });
