@@ -64,14 +64,21 @@ router.post("/character/create", async (req, res) => {
 // All characters
 router.get("/characters", async (req, res) => {
   try {
-    const { name } = req.query;
+    const { name, page, limit } = req.query;
     let filters = {};
+    let skip = 0;
 
     if (name) {
       filters.name = new RegExp(name, "i"); // filtre 'name' non sensible à la casse
     }
 
-    const characters = await Character.find(filters);
+    if (page) {
+      skip = Math.max((Number(page) - 1) * Number(limit), 0); // si l'utilisateur envoie une page < 0, skip = 0
+    }
+
+    const characters = await Character.find(filters)
+      .limit(Number(limit))
+      .skip(skip);
 
     if (characters) {
       const count = await Character.find(filters).countDocuments();
