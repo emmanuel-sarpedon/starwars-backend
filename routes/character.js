@@ -67,17 +67,18 @@ router.get("/characters", async (req, res) => {
     const { name, page, limit } = req.query;
     let filters = {};
     let skip = 0;
+    let numberOfResults = limit || 5; // par défaut, renvoie 5 résultats maximum
 
     if (name) {
       filters.name = new RegExp(name, "i"); // filtre 'name' non sensible à la casse
     }
 
     if (page) {
-      skip = Math.max((Number(page) - 1) * Number(limit), 0); // si l'utilisateur envoie une page < 0, skip = 0
+      skip = Math.max((Number(page) - 1) * Number(numberOfResults), 0); // si l'utilisateur envoie une page < 0, skip = 0
     }
 
     const characters = await Character.find(filters)
-      .limit(Number(limit))
+      .limit(Number(numberOfResults))
       .skip(skip);
 
     if (characters) {
@@ -99,7 +100,7 @@ router.get("/character/:id", async (req, res) => {
     if (character) {
       res.status(200).json(character);
     } else {
-      res.status(204); // Statut HTTP : No Content
+      res.status(400).json({ message: "Character Not found" }); // Statut HTTP : No Content
     }
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -123,6 +124,7 @@ router.put("/character/update/:id", async (req, res) => {
       species,
       vehicles,
       starships,
+      picture_url,
     } = req.fields;
 
     if (
@@ -138,7 +140,8 @@ router.put("/character/update/:id", async (req, res) => {
         films ||
         species ||
         vehicles ||
-        starships)
+        starships ||
+        picture_url)
     ) {
       // (() => {
       //   Object.keys(req.fields).forEach((e, i) => {
@@ -188,6 +191,10 @@ router.put("/character/update/:id", async (req, res) => {
 
       if (starships) {
         characterToUpdate.starships = starships;
+      }
+
+      if (picture_url) {
+        characterToUpdate.picture_url = picture_url;
       }
 
       characterToUpdate.edited = Date.now();
