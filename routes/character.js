@@ -83,7 +83,7 @@ router.get("/characters", async (req, res) => {
 
     if (characters) {
       const count = await Character.find(filters).countDocuments();
-      res.status(200).json({ count: count, data: characters });
+      res.status(200).json({ count: count, data: characters }); // 'count' nécessaire pour la pagination côté client
     } else {
       res.status(204); // Statut HTTP : No Content
     }
@@ -128,7 +128,7 @@ router.put("/character/update/:id", async (req, res) => {
     } = req.fields;
 
     if (
-      // si on trouve un personne à modifier, et si au moins un paramètre est à modifier
+      // si on trouve un personnage à modifier, et si au moins un paramètre est à modifier
       characterToUpdate &&
       (name ||
         height ||
